@@ -43,9 +43,9 @@ spec:
               value: "vinlab-backend"
           resources:
             limits:
-              memory: "256Mi"
+              memory: "2046Mi"
             requests:
-              memory: "128Mi"
+              memory: "1024Mi"
       imagePullSecrets:
         - name: vindr-ecr
 ---
