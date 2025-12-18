@@ -34,6 +34,7 @@ spec:
       containers:
         - name: orthanc
           image: jodogne/orthanc:1.12.1
+          imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 4242
               name: dicom-port
