@@ -1,0 +1,46 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: id-generator-deployment
+  namespace: vinlab
+spec:
+  selector:
+    matchLabels:
+      app: id-generator
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: id-generator
+    spec:
+      containers:
+        - name: id-generator
+          image: vindr/vinlab-idgen
+          ports:
+            - containerPort: 8080
+              name: idgen-port
+          env:
+            - name: GIN_MODE
+              value: "release"
+            - name: RQLITE__URI
+              value: "rqlite.vinlab:4001"
+          resources:
+            limits:
+              memory: "256Mi"
+            requests:
+              memory: "128Mi"
+      imagePullSecrets:
+        - name: vindr-ecr
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: id-generator
+  namespace: vinlab
+spec:
+  selector:
+    app: id-generator
+  ports:
+    - port: 8080
+      targetPort: 8080

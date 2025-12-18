@@ -1,0 +1,65 @@
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: rqlite-pvc
+  namespace: vinlab
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: local-path
+  resources:
+    requests:
+      storage: 2Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rqlite-deployment
+  namespace: vinlab
+spec:
+  selector:
+    matchLabels:
+      app: rqlite
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: rqlite
+    spec:
+      volumes:
+        - name: rqlite-pvc
+          persistentVolumeClaim:
+            claimName: rqlite-pvc
+      containers:
+        - name: rqlite
+          image: rqlite/rqlite:5.10.2
+          ports:
+            - containerPort: 4001
+              name: http-port
+            - containerPort: 4002
+              name: raft-port
+          volumeMounts:
+            - name: rqlite-pvc
+              mountPath: /rqlite/file/data
+          resources:
+            limits:
+              memory: "256Mi"
+            requests:
+              memory: "128Mi"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: rqlite
+  namespace: vinlab
+spec:
+  selector:
+    app: rqlite
+  ports:
+    - name: http
+      port: 4001
+      targetPort: 4001
+    - name: raft
+      port: 4002
+      targetPort: 4002
