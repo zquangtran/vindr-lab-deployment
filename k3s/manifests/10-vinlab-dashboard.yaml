@@ -32,15 +32,15 @@ spec:
             - name: OIDC_CLIENT_ID
               value: "vinlab-frontend"
             - name: OIDC_AUTHORIZATION_URI
-              value: "http://localhost:8080/auth/realms/vinlab/protocol/openid-connect/auth"
+              value: "http://localhost:8080/realms/vinlab/protocol/openid-connect/auth"
             - name: OIDC_ACCESS_TOKEN_URI
-              value: "http://localhost:8080/auth/realms/vinlab/protocol/openid-connect/token"
+              value: "http://localhost:8080/realms/vinlab/protocol/openid-connect/token"
             - name: OIDC_REDIRECT_URI
               value: "http://localhost:8080/dashboard"
             - name: OIDC_LOGOUT_URI
-              value: "http://localhost:8080/auth/realms/vinlab/protocol/openid-connect/logout"
+              value: "http://localhost:8080/realms/vinlab/protocol/openid-connect/logout"
             - name: OIDC_USERINFO_ENDPOINT
-              value: "http://localhost:8080/auth/realms/vinlab/protocol/openid-connect/userinfo"
+              value: "http://localhost:8080/realms/vinlab/protocol/openid-connect/userinfo"
             - name: OIDC_AUDIENCE
               value: "vinlab-backend"
           resources:

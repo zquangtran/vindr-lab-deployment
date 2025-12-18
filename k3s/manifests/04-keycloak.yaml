@@ -33,23 +33,25 @@ spec:
             claimName: keycloak-pvc
       containers:
         - name: keycloak
-          image: jboss/keycloak:11.0.2
-          args:
-            - "-Djboss.http.port=8080"
-            - "-Dkeycloak.profile.feature.upload_scripts=enabled"
+          image: quay.io/keycloak/keycloak:20.0.2
+          command: ["start-dev"]
           ports:
             - containerPort: 8080
               name: keycloak-port
           env:
-            - name: KEYCLOAK_USER
+            - name: KEYCLOAK_ADMIN
               value: admin
-            - name: KEYCLOAK_PASSWORD
+            - name: KEYCLOAK_ADMIN_PASSWORD
               value: admin
-            - name: PROXY_ADDRESS_FORWARDING
+            - name: KC_HTTP_ENABLED
               value: "true"
+            - name: KC_HOSTNAME_STRICT
+              value: "false"
+            - name: KC_PROXY
+              value: "edge"
           volumeMounts:
             - name: keycloak-pvc
-              mountPath: /opt/jboss/keycloak/standalone/data
+              mountPath: /opt/keycloak/data
           resources:
             limits:
               memory: "1Gi"

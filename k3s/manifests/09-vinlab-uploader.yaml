@@ -52,7 +52,7 @@ spec:
             - name: APP_KC_VERIFY_AUDIENCE
               value: "vinlab-backend"
             - name: APP_KEYCLOAK_HOST
-              value: http://keycloak.vinlab:8080/auth
+              value: http://keycloak.vinlab:8080
             - name: APP_KEYCLOAK_REALM
               value: vinlab
           resources:

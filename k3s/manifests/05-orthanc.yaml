@@ -33,7 +33,7 @@ spec:
             claimName: orthanc-pvc
       containers:
         - name: orthanc
-          image: osimis/orthanc
+          image: jodogne/orthanc:1.12.1
           ports:
             - containerPort: 4242
               name: dicom-port
