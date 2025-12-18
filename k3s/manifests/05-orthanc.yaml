@@ -1,0 +1,76 @@
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: orthanc-pvc
+  namespace: vinlab
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: local-path
+  resources:
+    requests:
+      storage: 10Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: orthanc-deployment
+  namespace: vinlab
+spec:
+  selector:
+    matchLabels:
+      app: orthanc
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: orthanc
+    spec:
+      volumes:
+        - name: orthanc-pvc
+          persistentVolumeClaim:
+            claimName: orthanc-pvc
+      containers:
+        - name: orthanc
+          image: osimis/orthanc
+          ports:
+            - containerPort: 4242
+              name: dicom-port
+            - containerPort: 8042
+              name: web-port
+          env:
+            - name: ORTHANC__AUTHENTICATION_ENABLED
+              value: "false"
+            - name: ORTHANC__DICOM_WEB__ENABLE
+              value: "true"
+            - name: ORTHANC__DICOM_WEB__ROOT
+              value: "/dicom-web"
+            - name: ORTHANC__DICOM_WEB__ENABLE_WADO
+              value: "true"
+            - name: ORTHANC__DICOM_WEB__WADO_ROOT
+              value: "/wado"
+          volumeMounts:
+            - name: orthanc-pvc
+              mountPath: /var/lib/orthanc/db
+          resources:
+            limits:
+              memory: "1Gi"
+            requests:
+              memory: "512Mi"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: orthanc
+  namespace: vinlab
+spec:
+  selector:
+    app: orthanc
+  ports:
+    - name: dicom
+      port: 4242
+      targetPort: 4242
+    - name: web
+      port: 8042
+      targetPort: 8042

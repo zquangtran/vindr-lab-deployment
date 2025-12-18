@@ -1,0 +1,90 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vinlab-api-deployment
+  namespace: vinlab
+spec:
+  selector:
+    matchLabels:
+      app: vinlab-api
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: vinlab-api
+    spec:
+      volumes:
+        - name: backend-configmap
+          configMap:
+            name: backend-configmap
+            items:
+              - key: config.production.toml
+                path: config.production.toml
+              - key: permissions.csv
+                path: permissions.csv
+      containers:
+        - name: vinlab-api
+          image: vindr/vinlab-api
+          ports:
+            - containerPort: 8080
+              name: api-port
+          env:
+            - name: API_ENV
+              value: production
+            - name: DEBUG
+              value: "DEBUG"
+            - name: GIN_MODE
+              value: "release"
+            - name: ELASTICSEARCH__URI
+              value: http://es.vinlab:9200
+            - name: KEYCLOAK__URI
+              value: http://keycloak.vinlab:8080
+            - name: KEYCLOAK__MASTER_REALM
+              value: master
+            - name: KEYCLOAK__APP_REALM
+              value: vinlab
+            - name: KEYCLOAK__ADMIN_USERNAME
+              value: admin
+            - name: KEYCLOAK__ADMIN_PASSWORD
+              value: admin
+            - name: MINIO__URI
+              value: minio.vinlab:9000
+            - name: MINIO__ACCESS_KEY_ID
+              value: vindr-lab-api
+            - name: MINIO__SECRET_ACCESS_KEY
+              value: vindr-lab-api
+            - name: MINIO__BUCKET_NAME
+              value: vinlab-label-exported
+            - name: REDIS__URI
+              value: redis.vinlab:6379
+            - name: ORTHANC__URI
+              value: http://orthanc.vinlab:8042
+            - name: ID_GENERATOR__URI
+              value: http://id-generator.vinlab:8080
+          volumeMounts:
+            - name: backend-configmap
+              mountPath: /opt/app/conf/config.production.toml
+              subPath: config.production.toml
+            - name: backend-configmap
+              mountPath: /opt/app/conf/permissions.csv
+              subPath: permissions.csv
+          resources:
+            limits:
+              memory: "512Mi"
+            requests:
+              memory: "256Mi"
+      imagePullSecrets:
+        - name: vindr-ecr
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: vinlab-api
+  namespace: vinlab
+spec:
+  selector:
+    app: vinlab-api
+  ports:
+    - port: 8080
+      targetPort: 8080
