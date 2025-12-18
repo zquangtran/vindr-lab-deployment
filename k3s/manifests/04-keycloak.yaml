@@ -33,7 +33,7 @@ spec:
             claimName: keycloak-pvc
       containers:
         - name: keycloak
-          image: jboss/keycloak:11.0.2
+          image: quay.io/keycloak/keycloak:20.0.2
           args:
             - "-Djboss.http.port=8080"
             - "-Dkeycloak.profile.feature.upload_scripts=enabled"
